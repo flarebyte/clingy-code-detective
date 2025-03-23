@@ -127,3 +127,57 @@ Create a command-line tool in Go that scans multiple project directories (recurs
 | 3. Fully Concurrent (Goroutine per file) | 🔴 Hard                | ⚡️⚡️ Very High | ✅✅ Yes    | Max performance, large project sets       |
 | 4. Channel-based Producer/Consumer       | 🟡 Medium              | ⚡️ Good         | ✅ Yes      | Clean concurrency for medium-large sets   |
 | 5. Fan-Out / Fan-In (MapReduce-ish)      | 🔴 Hardest             | ⚡️⚡️ Very High | ✅✅ Yes    | Best for large, nested project structures |
+
+## Steps for Producer/Consumer Architecture in Go
+
+**Setup**
+
+- Define a list of supported dependency files (e.g., `package.json`, `requirements.txt`, etc.)
+- Create a struct to hold file data or errors
+
+**Channels**
+
+- Create a channel to send found file paths (`filePathChan`)
+- Create a channel to send parsed results (`resultChan`)
+
+**Producer (Directory Walker)**
+
+- Recursively walk directories using `filepath.WalkDir`
+- If a supported file is found, send its path into `filePathChan`
+
+**Consumers (Workers)**
+
+- Spawn N workers (goroutines)
+- Each reads from `filePathChan`, opens & parses file (JSON or YAML), sends result to `resultChan`
+
+**Result Collector**
+
+- Read from `resultChan` and handle parsed data (e.g., store, print, or aggregate)
+
+**Cleanup**
+
+- Close channels properly (once walking is done and workers have exited)
+- Use `sync.WaitGroup` to coordinate worker completion
+
+**Mermaid Diagram**
+
+```mermaid
+flowchart TD
+    A[Start] --> B[Initialize Channels and WaitGroup]
+    B --> C[Start Producer: walk directories]
+    C -->|Send file paths| D[[filePathChan]]
+
+    subgraph Consumers [Worker Goroutines]
+        E1[Worker 1] -->|Read & Parse| D
+        E1 --> F1[[resultChan]]
+        E2[Worker 2] -->|Read & Parse| D
+        E2 --> F2[[resultChan]]
+        E3[Worker N] -->|Read & Parse| D
+        E3 --> F3[[resultChan]]
+    end
+
+    D --> G[Close filePathChan after walk completes]
+    F1 & F2 & F3 --> H[Collect results from resultChan]
+    H --> I[Process / Aggregate Results]
+    I --> Z[Done]
+```
