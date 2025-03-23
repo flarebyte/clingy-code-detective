@@ -66,18 +66,13 @@ workflows:
         main:
           commands:
             - title: Format nicely the lib source code
-              run: dart format lib
+              run: go fmt ./lib/...
             - title: Format nicely the test source code
-              run: dart format test
+              run: go fmt ./test/...
             - title: Run test coverage
-              run: flutter test --coverage
+              run: go test -coverprofile=coverage.out ./...
             - title: Display test coverage Summary
-              description: Assuming that you have run "brew install lcov"
-              run: lcov --list coverage/lcov.info
-            - title: Format nicely the examples
-              run: dart format example
-            - title: run the example
-              run: dart run example/example.dart
+              run: go tool cover -func=coverage.out
 
   deps:
     title: Library dependencies
@@ -90,7 +85,7 @@ workflows:
         main:
           commands:
             - title: Upgrade to latest dependencies
-              run: dart pub upgrade --major-versions
+              run: go get -u ./...  
   doc:
     title: Generate the documentation
     description: Generate the documentation automatically
@@ -101,11 +96,9 @@ workflows:
         motivation: Good documentation is essential for developer experience
         main:
           commands:
-            - title: Generate API documentation
-              run: dart doc
             - name: deps
-              title: Document the dart dependencies
-              run: npx zx https://raw.githubusercontent.com/flarebyte/baldrick-reserve/main/script/dart-dependencies.mjs
+              title: Document the go dependencies
+              run: npx zx https://raw.githubusercontent.com/flarebyte/baldrick-reserve/main/script/go-dependencies.mjs
             - name: fix
               title: Fix all the markdown files
               run: npx baldrick-dev-ts@latest markdown fix
@@ -136,21 +129,21 @@ workflows:
         motivation: Make the code more consistent and avoid bugs
         main:
           commands:
-            - name: check
-              title: Lint check sources
-              run: dart analyze
-            - name: check fix
-              title: Preview of the proposed changes for a project
-              run: dart fix --dry-run
+          - name: check
+            title: Lint check sources
+            run: golangci-lint run ./...
+          - name: check fix
+            title: Preview of the proposed changes for a project
+            run: go vet ./...
       fix:
         title: Fix static code analysis
         description: Fix problems in Dart code
         motivation: Facilitate routine maintenance of code
         main:
-          commands:
-            - name: fix
-              title: Fix source code
-              run: dart fix --apply
+         commands:
+          - name: fix
+            title: Fix source code
+            run: golangci-lint run --fix ./...
   md:
     title: Markdown documentation
     description: Manage markdown documentation
@@ -202,7 +195,7 @@ workflows:
               run: rm -rf coverage
             - name: lint
               title: Check linting
-              run: dart analyze
+              run: golangci-lint run ./...
             - name: markdown
               title: Check markdown files
               run: npx baldrick-dev-ts@latest markdown check
@@ -211,7 +204,7 @@ workflows:
               run: npx baldrick-dev-ts@latest markdown check -s .github/
             - name: outdated
               title: Check whether some libraries are outdated
-              run: dart pub outdated
+              run: go list -u -m all
             - name: rm-report
               title: Remove previous report
               run: rm -f temp/pull_request_relevant.md
