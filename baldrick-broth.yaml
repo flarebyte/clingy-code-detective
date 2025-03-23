@@ -317,7 +317,7 @@ workflows:
             - title: merge model with new workflow
               run: npx baldrick-whisker@latest object baldrick-broth.yaml
                 temp/broth/baldrick-broth-model.yaml
-                github:flarebyte:baldrick-reserve:data/dart/baldrick-broth.yaml
+                github:flarebyte:baldrick-reserve:data/go/baldrick-broth.yaml
       norm:
         title: Normalize the project
         description: Normalize the project in a similar fashion that the other dart projects
@@ -329,17 +329,17 @@ workflows:
             - title: Github - create bug report form
               run:
                 npx baldrick-whisker@latest object .github/ISSUE_TEMPLATE/bug_report.yaml
-                github:flarebyte:baldrick-reserve:data/dart/bug-report.yaml
+                github:flarebyte:baldrick-reserve:data/go/bug-report.yaml
             - title: Github - create feature request form
               run: npx baldrick-whisker@latest object
                 .github/ISSUE_TEMPLATE/feature_request.yaml
-                github:flarebyte:baldrick-reserve:data/dart/feature-request.yaml
+                github:flarebyte:baldrick-reserve:data/go/feature-request.yaml
             - title: Github - create main workflow
               run: npx baldrick-whisker@latest object .github/workflows/main.yml
-                github:flarebyte:baldrick-reserve:data/dart/workflow-main.yml
+                github:flarebyte:baldrick-reserve:data/go/workflow-main.yml
             - title: Github - create pull request configuration
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/pull-request-template.hbs
+                github:flarebyte:baldrick-reserve:template/go/pull-request-template.hbs
                 .github/pull_request_template.md
             - title: Create all needed repositories
               run: mkdir -p .vscode lib/src test
@@ -349,7 +349,7 @@ workflows:
                   url: https://git-scm.com/docs/gitignore
               run:
                 npx baldrick-whisker@latest render --no-ext baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/gitignore.hbs
+                github:flarebyte:baldrick-reserve:template/go/gitignore.hbs
                 .gitignore.sh
             - title: Create .editorconfig
               run:
@@ -361,14 +361,14 @@ workflows:
                   url: https://editorconfig.org/
             - title: Create a starter .vscode/settings.json
               run: npx baldrick-whisker@latest object .vscode/settings.json
-                github:flarebyte:baldrick-reserve:data/dart/vscode-settings.json
+                github:flarebyte:baldrick-reserve:data/go/vscode-settings.json
                 --no-overwrite
             - title: Create .remarkrc.yml
               run: npx baldrick-whisker@latest object .remarkrc.yml
                 github:flarebyte:baldrick-reserve:data/ts/remarkrc.yml
             - title: Create CONTRIBUTING.md with contribution guidelines
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/contributing.hbs
+                github:flarebyte:baldrick-reserve:template/go/contributing.hbs
                 CONTRIBUTING.md
             - title: Create CODE_OF_CONDUCT.md with code of conduct guidelines
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
@@ -380,20 +380,20 @@ workflows:
                 DECISIONS.md --no-overwrite
             - title: Create README.md
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/readme.hbs
+                github:flarebyte:baldrick-reserve:template/go/readme.hbs
                 README.md
             - title: Create TECHNICAL_DESIGN.md
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/technical-design.hbs
+                github:flarebyte:baldrick-reserve:template/go/technical-design.hbs
                 TECHNICAL_DESIGN.md
             - title: Create MAINTENANCE.md
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/maintenance.hbs
+                github:flarebyte:baldrick-reserve:template/go/maintenance.hbs
                 MAINTENANCE.md
             - title: Create LICENSE
               run:
                 npx baldrick-whisker@latest render --no-ext baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/license.hbs
+                github:flarebyte:baldrick-reserve:template/go/license.hbs
                 LICENSE.md
             - title: Fix markdown
               run: npx baldrick-broth@latest md fix
@@ -421,7 +421,7 @@ workflows:
               run: sponge temp/broth/package-deps.yaml
             - title: Create pubspec.yaml metadata from broth model
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/package.hbs
+                github:flarebyte:baldrick-reserve:template/go/package.hbs
                 temp/broth/package-specific.yaml
             - title: merge dependencies with broth model info
               run: npx baldrick-whisker@latest object pubspec.yaml
@@ -443,5 +443,5 @@ workflows:
           commands:
             - title: Create README.md
               run: npx baldrick-whisker@latest render baldrick-broth.yaml
-                github:flarebyte:baldrick-reserve:template/dart/readme.hbs
+                github:flarebyte:baldrick-reserve:template/go/readme.hbs
                 README.md
