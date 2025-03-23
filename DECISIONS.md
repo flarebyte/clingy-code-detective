@@ -10,7 +10,7 @@ is a software design choice that evaluates:
 The purpose is to understand the reasons behind the current architecture, so
 they can be carried-on or re-visited in the future.
 
-**Problem Specification: CLI Tool to Scan Multiple Projects for Dependencies**
+## Problem Specification: CLI Tool to Scan Multiple Projects for Dependencies
 
 **Objective**  
 Create a command-line tool in Go that scans multiple project directories (recursively) to identify supported dependency files (e.g., `package.json` for Node.js, `pubspec.yaml` for Dart), extracts all declared dependencies with their versions and categories (e.g., dev, prod), and returns a detailed list along with the file path where each dependency was found. The tool must support mixed environments and ecosystems in a single scan.
@@ -51,3 +51,79 @@ Create a command-line tool in Go that scans multiple project directories (recurs
 - Accepts one or more directory paths to scan.
 - Supports `--json`, `--csv`, and `--aggregate` flags.
 - Supports filtering by ecosystem with `--include=node,dart`.
+
+## Possible architectures
+
+**Common Core Requirements (for all architectures)**
+
+- Recursive directory walking
+- File type detection (by name or extension)
+- Parsing JSON or YAML files
+- Error handling (missing files, malformed content, etc.)
+
+### Sequential Walker with File Type Switch
+
+**Description**: Walk each directory recursively using `filepath.WalkDir`, and sequentially check each file. If it's a supported dependency file, open it and decode its content (JSON/YAML).
+
+- **Concurrency**: ❌ None
+- **Ease of implementation**: ✅ Easiest
+- **Performance**: 🚫 Slower on large codebases
+- **Pros**: Simple, easy to debug, minimal complexity
+- **Cons**: Doesn’t scale well for large trees
+
+### Concurrent File Processing with Goroutines + Worker Pool
+
+**Description**: Use `filepath.WalkDir` to collect file paths first, then process each supported file concurrently via a worker pool (e.g., 4-8 workers).
+
+- **Concurrency**: ✅ Controlled via workers
+- **Ease of implementation**: 🟡 Moderate
+- **Performance**: ⚡️ Good on multi-core machines
+- **Pros**: Balanced control over concurrency; scales well
+- **Cons**: Slightly more boilerplate (channels, goroutines, waitgroups)
+
+### Fully Concurrent Walker with Parallel File Handling
+
+**Description**: As you traverse the directories, launch a goroutine for each dependency file you encounter (maybe limit goroutine count using a semaphore to avoid exhaustion).
+
+- **Concurrency**: ✅ Maximum
+- **Ease of implementation**: 🔴 Harder
+- **Performance**: ⚡️⚡️ Very high on SSDs and multi-core
+- **Pros**: Fastest approach
+- **Cons**: Harder to manage (synchronization, errors, goroutine leak risk)
+
+### Channel-based Producer/Consumer Pattern
+
+**Description**:
+
+- **Producer**: Walks directories, finds relevant files, and sends them over a channel
+- **Consumers**: Read from channel and parse files in parallel
+
+- **Concurrency**: ✅ Cleanly structured
+- **Ease of implementation**: 🟡 Moderate (cleaner than raw goroutines)
+- **Performance**: ⚡️ Good
+- **Pros**: Scalable and maintainable, good balance of structure and speed
+- **Cons**: Slightly more setup than sequential approach
+
+### MapReduce-style Fan-Out / Fan-In Model
+
+**Description**:
+
+- Fan out directory walking across top-level directories
+- Each goroutine processes a subtree
+- Results are collected via channels and aggregated
+
+- **Concurrency**: ✅ High
+- **Ease of implementation**: 🔴 Most complex
+- **Performance**: ⚡️⚡️ High
+- **Pros**: Highly parallel, ideal for large project trees
+- **Cons**: Overhead of coordinating goroutines and merging results
+
+### Summary Table
+
+| Architecture                             | Ease of Implementation | Performance      | Concurrency | Recommended Use Case                      |
+| ---------------------------------------- | ---------------------- | ---------------- | ----------- | ----------------------------------------- |
+| 1. Sequential                            | ✅ Easiest             | 🚫 Low           | ❌ None     | Small projects or prototypes              |
+| 2. Worker Pool                           | 🟡 Medium              | ⚡️ Good         | ✅ Yes      | Balanced performance, simple to scale     |
+| 3. Fully Concurrent (Goroutine per file) | 🔴 Hard                | ⚡️⚡️ Very High | ✅✅ Yes    | Max performance, large project sets       |
+| 4. Channel-based Producer/Consumer       | 🟡 Medium              | ⚡️ Good         | ✅ Yes      | Clean concurrency for medium-large sets   |
+| 5. Fan-Out / Fan-In (MapReduce-ish)      | 🔴 Hardest             | ⚡️⚡️ Very High | ✅✅ Yes    | Best for large, nested project structures |
