@@ -3,7 +3,6 @@ package cli
 import (
 	"errors"
 	"flag"
-	"fmt"
 	"os"
 	"strings"
 )
@@ -28,30 +27,26 @@ func (i *parseIncludes) Set(value string) error {
 	return nil
 }
 
-// ParseArgs parses command-line arguments into Config.
-func ParseArgs() (*Config, error) {
+// ParseArgsFrom parses command-line arguments into Config.
+func ParseArgsFrom(args []string) (*Config, error) {
 	var includes parseIncludes
 	var jsonOut, csvOut, aggregate bool
 
-	flag.Var(&includes, "include", "Comma-separated list of ecosystems to include (e.g., node,dart)")
-	flag.BoolVar(&jsonOut, "json", false, "Output in JSON format")
-	flag.BoolVar(&csvOut, "csv", false, "Output in CSV format")
-	flag.BoolVar(&aggregate, "aggregate", false, "Aggregate results across all directories")
+	fs := flag.NewFlagSet("clingy", flag.ContinueOnError)
+	fs.Var(&includes, "include", "Comma-separated list of ecosystems to include (e.g., node,dart)")
+	fs.BoolVar(&jsonOut, "json", false, "Output in JSON format")
+	fs.BoolVar(&csvOut, "csv", false, "Output in CSV format")
+	fs.BoolVar(&aggregate, "aggregate", false, "Aggregate results across all directories")
 
-	flag.Usage = func() {
-		fmt.Fprintf(flag.CommandLine.Output(), "Usage: %s [options] <paths...>\n", os.Args[0])
-		flag.PrintDefaults()
+	if err := fs.Parse(args); err != nil {
+		return nil, err
 	}
 
-	flag.Parse()
-
-	// Require at least one path
-	paths := flag.Args()
+	paths := fs.Args()
 	if len(paths) == 0 {
 		return nil, errors.New("at least one directory path must be specified")
 	}
 
-	// Enforce mutual exclusivity between JSON and CSV formats
 	var format string
 	switch {
 	case jsonOut && csvOut:
@@ -68,4 +63,9 @@ func ParseArgs() (*Config, error) {
 		Aggregate: aggregate,
 		Includes:  includes,
 	}, nil
+}
+
+// ParseArgs parses command-line arguments into Config.
+func ParseArgs() (*Config, error) {
+	return ParseArgsFrom(os.Args[1:])
 }
