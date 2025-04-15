@@ -1,5 +1,3 @@
-package depscan
-
 import (
 	"errors"
 	"path/filepath"
