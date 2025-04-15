@@ -51,12 +51,16 @@ func TestParseArgs_Basic(t *testing.T) {
 }
 
 func TestParseArgs_MutuallyExclusiveFormats(t *testing.T) {
-	withArgs([]string{"dir", "--json", "--csv"}, func() {
-		_, err := ParseArgs()
-		if err == nil || err.Error() != "only one of --json or --csv can be used" {
-			t.Errorf("expected mutually exclusive error, got: %v", err)
-		}
-	})
+	args := []string{
+		"--json",
+		"--csv",
+		"dir",
+	}
+
+	_, err := ParseArgsFrom(args)
+	if err == nil || err.Error() != "only one of --json or --csv can be used" {
+		t.Errorf("expected mutually exclusive error, got: %v", err)
+	}
 }
 
 func TestParseArgs_NoPaths(t *testing.T) {
