@@ -1,3 +1,5 @@
+package parser
+
 // Dependency represents a single declared dependency.
 type Dependency struct {
 	Name     string
@@ -14,5 +16,5 @@ type DependencyFile struct {
 
 // Parser is implemented by each language-specific dependency file parser.
 type Parser interface {
-	Parse(path string) ([]Dependency, error)
+	Parse(content []byte) ([]Dependency, error)
 }

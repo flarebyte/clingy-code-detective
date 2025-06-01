@@ -1,13 +1,15 @@
+package parser
+
+import (
+	"strings"
+)
+
 type pythonParser struct{}
 
-func (p pythonParser) Parse(path string) ([]Dependency, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
+func (p pythonParser) Parse(content []byte) ([]Dependency, error) {
 
 	var deps []Dependency
-	lines := strings.Split(string(data), "\n")
+	lines := strings.Split(string(content), "\n")
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {

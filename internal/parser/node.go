@@ -1,3 +1,9 @@
+package parser
+
+import (
+	"encoding/json"
+)
+
 type nodeParser struct{}
 
 type packageJSON struct {
@@ -5,14 +11,9 @@ type packageJSON struct {
 	DevDependencies map[string]string `json:"devDependencies"`
 }
 
-func (p nodeParser) Parse(path string) ([]Dependency, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
-
+func (p nodeParser) Parse(content []byte) ([]Dependency, error) {
 	var pkg packageJSON
-	if err := json.Unmarshal(data, &pkg); err != nil {
+	if err := json.Unmarshal(content, &pkg); err != nil {
 		return nil, err
 	}
 

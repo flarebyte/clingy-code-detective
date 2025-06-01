@@ -1,3 +1,9 @@
+package parser
+
+import (
+	"gopkg.in/yaml.v3"
+)
+
 type dartParser struct{}
 
 type pubspecYAML struct {
@@ -5,14 +11,10 @@ type pubspecYAML struct {
 	DevDependencies map[string]interface{} `yaml:"dev_dependencies"`
 }
 
-func (p dartParser) Parse(path string) ([]Dependency, error) {
-	data, err := os.ReadFile(path)
-	if err != nil {
-		return nil, err
-	}
+func (p dartParser) Parse(content []byte) ([]Dependency, error) {
 
 	var spec pubspecYAML
-	if err := yaml.Unmarshal(data, &spec); err != nil {
+	if err := yaml.Unmarshal(content, &spec); err != nil {
 		return nil, err
 	}
 

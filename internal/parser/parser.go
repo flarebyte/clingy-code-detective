@@ -1,5 +1,8 @@
+package parser
+
 import (
 	"errors"
+	"os"
 	"path/filepath"
 )
 
@@ -20,7 +23,15 @@ func ParseDependencyFile(path string) DependencyFile {
 		return DependencyFile{Path: path, Err: errors.New("unsupported file type")}
 	}
 
-	deps, err := parser.Parse(path)
+	content, ferr := os.ReadFile(path)
+	if ferr != nil {
+		return DependencyFile{
+			Path: path,
+			Err:  ferr,
+		}
+	}
+
+	deps, err := parser.Parse(content)
 	return DependencyFile{
 		Path:         path,
 		Dependencies: deps,
