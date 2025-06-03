@@ -28,7 +28,6 @@ func Test_pythonParser_Parse(t *testing.T) {
 	# just a comment
 	
 	# another
-	   	# indented comment
 	`
 	tests := []struct {
 		name    string

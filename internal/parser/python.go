@@ -8,8 +8,8 @@ type pythonParser struct{}
 
 func (p pythonParser) Parse(content []byte) ([]Dependency, error) {
 
-	var deps []Dependency
 	lines := strings.Split(string(content), "\n")
+	deps := make([]Dependency, 0, len(lines)) // ensures non-nil slice
 	for _, line := range lines {
 		line = strings.TrimSpace(line)
 		if line == "" || strings.HasPrefix(line, "#") {
