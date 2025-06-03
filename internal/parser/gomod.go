@@ -17,7 +17,8 @@ func (p goModParser) Parse(content []byte) ([]Dependency, error) {
 	inRequireBlock := false
 
 	for scanner.Scan() {
-		line := strings.TrimSpace(scanner.Text())
+		rawLine := scanner.Text()
+		line := strings.TrimSpace(rawLine)
 
 		if strings.HasPrefix(line, "require (") {
 			inRequireBlock = true
@@ -28,18 +29,15 @@ func (p goModParser) Parse(content []byte) ([]Dependency, error) {
 			continue
 		}
 
-		if !inRequireBlock && !strings.HasPrefix(line, "require ") {
-			continue
-		}
-
 		var depLine string
 		if inRequireBlock {
 			depLine = line
+		} else if strings.HasPrefix(line, "require ") {
+			depLine = strings.TrimSpace(strings.TrimPrefix(line, "require "))
 		} else {
-			depLine = strings.TrimPrefix(line, "require ")
+			continue
 		}
 
-		// Remove inline comments, but detect `// indirect`
 		category := "prod"
 		if strings.Contains(depLine, "// indirect") {
 			category = "dev"
@@ -50,7 +48,7 @@ func (p goModParser) Parse(content []byte) ([]Dependency, error) {
 
 		fields := strings.Fields(depLine)
 		if len(fields) != 2 {
-			continue // malformed line; skip
+			continue
 		}
 
 		deps = append(deps, Dependency{
