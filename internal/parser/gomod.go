@@ -11,7 +11,7 @@ type goModParser struct{}
 // Parse extracts dependencies from a go.mod file. It identifies "prod" or "dev"
 // based on the presence of "// indirect" comments in the require block.
 func (p goModParser) Parse(content []byte) ([]Dependency, error) {
-	var deps []Dependency
+	deps := make([]Dependency, 0)
 	scanner := bufio.NewScanner(bytes.NewReader(content))
 
 	inRequireBlock := false
