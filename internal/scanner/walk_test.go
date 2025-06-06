@@ -58,10 +58,17 @@ func TestWalkDirectories(t *testing.T) {
 		expectedPaths []string
 	}{
 		{
-			name:          "empty includes - all supported files, no excludes",
-			includes:      []string{},
-			excludes:      []string{},
-			expectedPaths: slices.Clone(mapsValues(supported)),
+			name:     "empty includes - all supported files, no excludes",
+			includes: []string{},
+			excludes: []string{},
+			expectedPaths: []string{
+				supported["package.json"],
+				supported["pubspec.yaml"],
+				supported["go.mod"],
+				supported["requirements.txt"],
+				nodeModulesFile,
+				vendorFile,
+			},
 		},
 		{
 			name:          "includes python only, no excludes",
