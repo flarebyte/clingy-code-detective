@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/flarebyte/clingy-code-detective/internal/cli"
+	"github.com/flarebyte/clingy-code-detective/internal/scanner"
 )
 
 func main() {
@@ -19,4 +20,13 @@ func main() {
 	fmt.Printf("Format: %s\n", cfg.Format)
 	fmt.Printf("Aggregate: %v\n", cfg.Aggregate)
 	fmt.Printf("Includes: %v\n", cfg.Includes)
+
+	root := "." // Starting directory
+	filePathChan := make(chan string)
+
+	go scanner.WalkDirectories(root, filePathChan)
+
+	for path := range filePathChan {
+		fmt.Println("Found:", path)
+	}
 }
