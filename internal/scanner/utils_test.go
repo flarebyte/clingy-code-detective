@@ -16,12 +16,6 @@ func TestIsFileRequired(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "empty includes allows all - package.json",
-			includes: []string{},
-			filename: "package.json",
-			want:     true,
-		},
-		{
 			name:     "python only allows requirements.txt",
 			includes: []string{"python"},
 			filename: "requirements.txt",
@@ -46,10 +40,40 @@ func TestIsFileRequired(t *testing.T) {
 			want:     true,
 		},
 		{
-			name:     "ts alias allows package.json",
-			includes: []string{"ts"},
+			name:     "multiple includes - python and node - python file",
+			includes: []string{"python", "node"},
+			filename: "requirements.txt",
+			want:     true,
+		},
+		{
+			name:     "multiple includes - python and node - node file",
+			includes: []string{"python", "node"},
 			filename: "package.json",
 			want:     true,
+		},
+		{
+			name:     "multiple includes - python and node - go.mod excluded",
+			includes: []string{"python", "node"},
+			filename: "go.mod",
+			want:     false,
+		},
+		{
+			name:     "duplicates in includes - python python js - requirements.txt",
+			includes: []string{"python", "python", "js"},
+			filename: "requirements.txt",
+			want:     true,
+		},
+		{
+			name:     "duplicates in includes - python python js - package.json",
+			includes: []string{"python", "python", "js"},
+			filename: "package.json",
+			want:     true,
+		},
+		{
+			name:     "duplicates in includes - python python js - go.mod excluded",
+			includes: []string{"python", "python", "js"},
+			filename: "go.mod",
+			want:     false,
 		},
 		{
 			name:     "dart allows pubspec.yaml",
