@@ -18,10 +18,21 @@ func createFile(t *testing.T, dir, name string) string {
 	return path
 }
 
+// helper to create a subdirectory
+func createDir(t *testing.T, parent, name string) string {
+	t.Helper()
+	path := filepath.Join(parent, name)
+	err := os.Mkdir(path, 0755)
+	if err != nil {
+		t.Fatalf("Failed to create directory %s: %v", path, err)
+	}
+	return path
+}
+
 func TestWalkDirectories(t *testing.T) {
 	tmpDir := t.TempDir()
 
-	// Create supported files
+	// Create supported files in root
 	supported := map[string]string{
 		"package.json":     createFile(t, tmpDir, "package.json"),
 		"pubspec.yaml":     createFile(t, tmpDir, "pubspec.yaml"),
@@ -33,45 +44,72 @@ func TestWalkDirectories(t *testing.T) {
 	_ = createFile(t, tmpDir, "README.md")
 	_ = createFile(t, tmpDir, "main.go")
 
+	// Create subdir with supported files
+	nodeModulesDir := createDir(t, tmpDir, "node_modules")
+	nodeModulesFile := createFile(t, nodeModulesDir, "package.json")
+
+	vendorDir := createDir(t, tmpDir, "vendor")
+	vendorFile := createFile(t, vendorDir, "go.mod")
+
 	tests := []struct {
 		name          string
 		includes      []string
+		excludes      []string
 		expectedPaths []string
 	}{
 		{
-			name:          "empty includes - all supported files",
+			name:          "empty includes - all supported files, no excludes",
 			includes:      []string{},
+			excludes:      []string{},
 			expectedPaths: slices.Clone(mapsValues(supported)),
 		},
 		{
-			name:          "includes python only",
+			name:          "includes python only, no excludes",
 			includes:      []string{"python"},
+			excludes:      []string{},
 			expectedPaths: []string{supported["requirements.txt"]},
 		},
 		{
-			name:          "includes node only",
+			name:          "includes node only, exclude node_modules dir",
 			includes:      []string{"node"},
-			expectedPaths: []string{supported["package.json"]},
+			excludes:      []string{"/node_modules/"},
+			expectedPaths: []string{supported["package.json"]}, // nodeModulesFile should be skipped
 		},
 		{
-			name:          "includes js alias",
-			includes:      []string{"js"},
-			expectedPaths: []string{supported["package.json"]},
+			name:          "includes go only, exclude vendor dir",
+			includes:      []string{"go"},
+			excludes:      []string{"/vendor/"},
+			expectedPaths: []string{supported["go.mod"]}, // vendorFile should be skipped
 		},
 		{
-			name:          "includes dart and go",
-			includes:      []string{"dart", "go"},
-			expectedPaths: []string{supported["pubspec.yaml"], supported["go.mod"]},
+			name:          "includes node and go, exclude node_modules and vendor",
+			includes:      []string{"node", "go"},
+			excludes:      []string{"/node_modules/", "/vendor/"},
+			expectedPaths: []string{supported["package.json"], supported["go.mod"]},
 		},
 		{
-			name:          "includes python python js duplicates",
-			includes:      []string{"python", "python", "js"},
-			expectedPaths: []string{supported["requirements.txt"], supported["package.json"]},
+			name:     "includes empty (all), exclude vendor only",
+			includes: []string{},
+			excludes: []string{"/vendor/"},
+			expectedPaths: []string{
+				supported["package.json"],
+				supported["pubspec.yaml"],
+				supported["go.mod"],
+				supported["requirements.txt"],
+				nodeModulesFile, // node_modules is not excluded here
+			},
 		},
 		{
-			name:          "includes unknown category",
-			includes:      []string{"unknown"},
-			expectedPaths: []string{},
+			name:     "includes empty (all), exclude specific file path",
+			includes: []string{},
+			excludes: []string{vendorFile}, // exclude specific file path
+			expectedPaths: []string{
+				supported["package.json"],
+				supported["pubspec.yaml"],
+				supported["go.mod"],
+				supported["requirements.txt"],
+				nodeModulesFile,
+			},
 		},
 	}
 
@@ -80,7 +118,7 @@ func TestWalkDirectories(t *testing.T) {
 			filePathChan := make(chan string)
 			var foundPaths []string
 
-			go WalkDirectories(tmpDir, tt.includes, filePathChan)
+			go WalkDirectories(tmpDir, tt.includes, tt.excludes, filePathChan)
 
 			for path := range filePathChan {
 				foundPaths = append(foundPaths, path)

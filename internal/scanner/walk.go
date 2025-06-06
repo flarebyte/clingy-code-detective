@@ -8,7 +8,7 @@ import (
 
 // WalkDirectories walks the directory tree starting at root and sends
 // the path of required files into filePathChan. It closes filePathChan when done.
-func WalkDirectories(root string, includes []string, filePathChan chan<- string) {
+func WalkDirectories(root string, includes []string, excludes []string, filePathChan chan<- string) {
 	defer close(filePathChan)
 
 	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
@@ -18,7 +18,17 @@ func WalkDirectories(root string, includes []string, filePathChan chan<- string)
 			return nil
 		}
 
-		// Skip directories
+		// Check excludes first — skip entire subtree if directory is excluded
+		if IsFileExcluded(path, excludes) {
+			if d.IsDir() {
+				// Skip entire directory
+				return filepath.SkipDir
+			}
+			// Skip this file
+			return nil
+		}
+
+		// Skip directories (already handled above)
 		if d.IsDir() {
 			return nil
 		}
