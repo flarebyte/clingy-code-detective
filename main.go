@@ -23,7 +23,7 @@ func main() {
 
 	filePathChan := make(chan string)
 
-	go scanner.WalkDirectories(cfg.Paths[0], filePathChan)
+	go scanner.WalkDirectories(cfg.Paths[0], cfg.Includes, filePathChan)
 
 	for path := range filePathChan {
 		fmt.Println("Found:", path)

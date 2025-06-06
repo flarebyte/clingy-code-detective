@@ -6,16 +6,9 @@ import (
 	"path/filepath"
 )
 
-var supportedFiles = map[string]struct{}{
-	"package.json":     {},
-	"pubspec.yaml":     {},
-	"go.mod":           {},
-	"requirements.txt": {},
-}
-
 // WalkDirectories walks the directory tree starting at root and sends
-// the path of supported files into filePathChan. It closes filePathChan when done.
-func WalkDirectories(root string, filePathChan chan<- string) {
+// the path of required files into filePathChan. It closes filePathChan when done.
+func WalkDirectories(root string, includes []string, filePathChan chan<- string) {
 	defer close(filePathChan)
 
 	err := filepath.WalkDir(root, func(path string, d os.DirEntry, err error) error {
@@ -30,8 +23,8 @@ func WalkDirectories(root string, filePathChan chan<- string) {
 			return nil
 		}
 
-		// Check if file is supported
-		if _, ok := supportedFiles[d.Name()]; ok {
+		// Use IsFileRequired to check if this file should be included
+		if IsFileRequired(d.Name(), includes) {
 			filePathChan <- path
 		}
 
