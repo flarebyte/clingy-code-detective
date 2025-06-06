@@ -21,10 +21,9 @@ func main() {
 	fmt.Printf("Aggregate: %v\n", cfg.Aggregate)
 	fmt.Printf("Includes: %v\n", cfg.Includes)
 
-	root := "." // Starting directory
 	filePathChan := make(chan string)
 
-	go scanner.WalkDirectories(root, filePathChan)
+	go scanner.WalkDirectories(cfg.Paths[0], filePathChan)
 
 	for path := range filePathChan {
 		fmt.Println("Found:", path)
