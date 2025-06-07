@@ -20,10 +20,11 @@ func main() {
 	fmt.Printf("Format: %s\n", cfg.Format)
 	fmt.Printf("Aggregate: %v\n", cfg.Aggregate)
 	fmt.Printf("Includes: %v\n", cfg.Includes)
+	fmt.Printf("Excludes: %v\n", cfg.Excludes)
 
 	filePathChan := make(chan string)
 
-	go scanner.WalkDirectories(cfg.Paths[0], cfg.Includes, filePathChan)
+	go scanner.WalkDirectories(cfg.Paths[0], cfg.Includes, cfg.Excludes, filePathChan)
 
 	for path := range filePathChan {
 		fmt.Println("Found:", path)

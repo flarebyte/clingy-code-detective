@@ -23,6 +23,7 @@ func TestParseArgs_Basic(t *testing.T) {
 	args := []string{
 		"--json",
 		"--include=node,dart",
+		"--exclude=/node-modules/,/dist/",
 		"project1",
 		"project2",
 	}
@@ -43,6 +44,11 @@ func TestParseArgs_Basic(t *testing.T) {
 	wantIncludes := []string{"node", "dart"}
 	if !reflect.DeepEqual(cfg.Includes, wantIncludes) {
 		t.Errorf("Includes = %v, want %v", cfg.Includes, wantIncludes)
+	}
+
+	wantExcludes := []string{"/node-modules/", "/dist/"}
+	if !reflect.DeepEqual(cfg.Excludes, wantExcludes) {
+		t.Errorf("Excludes = %v, want %v", cfg.Excludes, wantExcludes)
 	}
 
 	if len(cfg.Paths) != 2 || cfg.Paths[0] != "project1" || cfg.Paths[1] != "project2" {
