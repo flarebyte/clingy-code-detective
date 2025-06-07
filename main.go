@@ -5,6 +5,7 @@ import (
 	"os"
 
 	"github.com/flarebyte/clingy-code-detective/internal/cli"
+	"github.com/flarebyte/clingy-code-detective/internal/parser"
 	"github.com/flarebyte/clingy-code-detective/internal/scanner"
 )
 
@@ -23,10 +24,13 @@ func main() {
 	fmt.Printf("Excludes: %v\n", cfg.Excludes)
 
 	filePathChan := make(chan string)
+	var root = cfg.Paths[0]
 
-	go scanner.WalkDirectories(cfg.Paths[0], cfg.Includes, cfg.Excludes, filePathChan)
+	go scanner.WalkDirectories(root, cfg.Includes, cfg.Excludes, filePathChan)
 
 	for path := range filePathChan {
 		fmt.Println("Found:", path)
+		var deps = parser.ParseDependencyFile(path)
+		fmt.Println("Parsed:", deps)
 	}
 }
