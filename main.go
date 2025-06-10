@@ -3,6 +3,8 @@ package main
 import (
 	"fmt"
 	"os"
+	"runtime"
+	"sync"
 
 	"github.com/flarebyte/clingy-code-detective/internal/cli"
 	"github.com/flarebyte/clingy-code-detective/internal/parser"
@@ -23,14 +25,27 @@ func main() {
 	fmt.Printf("Includes: %v\n", cfg.Includes)
 	fmt.Printf("Excludes: %v\n", cfg.Excludes)
 
+	numWorkers := runtime.NumCPU()
+
 	filePathChan := make(chan string)
+	resultChan := make(chan parser.DependencyFile)
+
+	var wg sync.WaitGroup
+
 	var root = cfg.Paths[0]
 
 	go scanner.WalkDirectories(root, cfg.Includes, cfg.Excludes, filePathChan)
 
-	for path := range filePathChan {
-		fmt.Println("Found:", path)
-		var deps = parser.ParseDependencyFile(path)
-		fmt.Println("Parsed:", deps)
+	//Parse each file with a pool of workers
+	for range numWorkers {
+		wg.Add(1)
+		go func() {
+			defer wg.Done()
+			parser.ProduceDependencyFile(filePathChan, resultChan)
+		}()
 	}
+	// for result := range resultChan {
+	// 	fmt.Println("Parsed", result)
+	// }
+	close(resultChan)
 }

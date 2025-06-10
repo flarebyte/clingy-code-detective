@@ -38,3 +38,10 @@ func ParseDependencyFile(path string) DependencyFile {
 		Err:          err,
 	}
 }
+
+func ProduceDependencyFile(filePathChan <-chan string, resultChan chan<- DependencyFile) {
+	for path := range filePathChan {
+		depFile := ParseDependencyFile(path)
+		resultChan <- depFile
+	}
+}
