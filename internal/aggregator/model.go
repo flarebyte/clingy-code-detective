@@ -18,3 +18,7 @@ type AggregatedDependency struct {
 	Category   string // e.g., "prod", "dev"
 	Packaging  string // e.g., "node", "python"
 }
+
+type FlatRenderer interface {
+	Render(deps []FlatDependency) ([]byte, error)
+}

@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"log"
 	"os"
 	"runtime"
 	"sync"
@@ -45,10 +46,22 @@ func main() {
 			parser.ProduceDependencyFile(filePathChan, resultChan)
 		}()
 	}
-	done := make(chan []aggregator.FlatDependency)
+	done := make(chan []aggregator.FlatDependency, 1)
 	go aggregator.CollectDependencies(resultChan, done)
 
 	wg.Wait()
 	close(resultChan)
-	<-done
+
+	// Select a renderer
+	renderer := &aggregator.JSONRenderer{}
+
+	// Render output
+	flatDependencies := <-done
+	output, err := renderer.Render(flatDependencies)
+	if err != nil {
+		log.Fatalf("failed to render dependencies: %v", err)
+	}
+
+	fmt.Println(string(output))
+
 }
