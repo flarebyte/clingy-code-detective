@@ -10,6 +10,7 @@ type Dependency struct {
 // DependencyFile holds the metadata and results of parsing a dependency file.
 type DependencyFile struct {
 	Path         string
+	Packaging    string
 	Dependencies []Dependency
 	Err          error
 }

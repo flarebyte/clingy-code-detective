@@ -11,10 +11,11 @@ func DenormaliseDependencyFile(file parser.DependencyFile) []FlatDependency {
 	flatDeps := make([]FlatDependency, 0, len(file.Dependencies))
 	for _, dep := range file.Dependencies {
 		flatDeps = append(flatDeps, FlatDependency{
-			Name:     dep.Name,
-			Version:  dep.Version,
-			Category: dep.Category,
-			Path:     file.Path,
+			Name:      dep.Name,
+			Version:   dep.Version,
+			Category:  dep.Category,
+			Path:      file.Path,
+			Packaging: file.Packaging,
 		})
 	}
 
