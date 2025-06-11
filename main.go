@@ -53,7 +53,7 @@ func main() {
 	close(resultChan)
 
 	// Select a renderer
-	renderer := &aggregator.JSONRenderer{}
+	renderer := &aggregator.CSVRenderer{}
 
 	// Render output
 	flatDependencies := <-done

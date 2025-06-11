@@ -1,6 +1,11 @@
 package aggregator
 
-import "encoding/json"
+import (
+	"bytes"
+	"encoding/csv"
+	"encoding/json"
+	"fmt"
+)
 
 // JSONRenderer implements Renderer for JSON output.
 type JSONRenderer struct{}
@@ -8,4 +13,41 @@ type JSONRenderer struct{}
 // Render renders dependencies as JSON.
 func (r *JSONRenderer) Render(deps []FlatDependency) ([]byte, error) {
 	return json.MarshalIndent(deps, "", "  ")
+}
+
+// CSVRenderer implements Renderer for CSV output.
+type CSVRenderer struct{}
+
+// Render renders dependencies as CSV.
+func (r *CSVRenderer) Render(deps []FlatDependency) ([]byte, error) {
+	var buf bytes.Buffer
+	writer := csv.NewWriter(&buf)
+
+	// Write header
+	header := []string{"Name", "Version", "Category", "Path", "Packaging"}
+	if err := writer.Write(header); err != nil {
+		return nil, fmt.Errorf("error writing CSV header: %w", err)
+	}
+
+	// Write records
+	for _, dep := range deps {
+		record := []string{
+			dep.Name,
+			dep.Version,
+			dep.Category,
+			dep.Path,
+			dep.Packaging,
+		}
+		if err := writer.Write(record); err != nil {
+			return nil, fmt.Errorf("error writing CSV record: %w", err)
+		}
+	}
+
+	writer.Flush()
+
+	if err := writer.Error(); err != nil {
+		return nil, fmt.Errorf("error flushing CSV writer: %w", err)
+	}
+
+	return buf.Bytes(), nil
 }
