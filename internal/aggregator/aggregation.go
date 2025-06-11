@@ -9,9 +9,9 @@ import (
 // AggregateDependencies aggregates a slice of FlatDependency into AggregatedDependency.
 func AggregateDependencies(deps []FlatDependency) []AggregatedDependency {
 	type aggState struct {
-		minV  *semver.Version
-		maxV  *semver.Version
-		count uint
+		minVersion string
+		maxVersion string
+		count      uint
 	}
 
 	// Grouping key: name + category + packaging
@@ -42,19 +42,30 @@ func AggregateDependencies(deps []FlatDependency) []AggregatedDependency {
 			}
 		}
 
-		v, err := semver.NewVersion(d.Version)
-		if err != nil {
+		// Try parsing version first to skip invalid ones early
+		if _, err := semver.NewVersion(d.Version); err != nil {
 			// Invalid version — skip it
 			continue
 		}
 
 		agg := state[key]
 
-		if agg.minV == nil || v.LessThan(agg.minV) {
-			agg.minV = v
+		if agg.minVersion == "" {
+			agg.minVersion = d.Version
+		} else {
+			minV, err := MinVersion(agg.minVersion, d.Version)
+			if err == nil {
+				agg.minVersion = minV.String()
+			}
 		}
-		if agg.maxV == nil || v.GreaterThan(agg.maxV) {
-			agg.maxV = v
+
+		if agg.maxVersion == "" {
+			agg.maxVersion = d.Version
+		} else {
+			maxV, err := MaxVersion(agg.maxVersion, d.Version)
+			if err == nil {
+				agg.maxVersion = maxV.String()
+			}
 		}
 
 		agg.count++
@@ -66,17 +77,12 @@ func AggregateDependencies(deps []FlatDependency) []AggregatedDependency {
 		m := meta[key]
 
 		ad := AggregatedDependency{
-			Name:      m.Name,
-			Category:  m.Category,
-			Packaging: m.Packaging,
-			Count:     agg.count,
-		}
-
-		if agg.minV != nil {
-			ad.MinVersion = agg.minV.String()
-		}
-		if agg.maxV != nil {
-			ad.MaxVersion = agg.maxV.String()
+			Name:       m.Name,
+			Category:   m.Category,
+			Packaging:  m.Packaging,
+			Count:      agg.count,
+			MinVersion: agg.minVersion,
+			MaxVersion: agg.maxVersion,
 		}
 
 		result = append(result, ad)
