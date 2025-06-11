@@ -52,6 +52,8 @@ func main() {
 		renderer = &aggregator.JSONRenderer{}
 	case "csv":
 		renderer = &aggregator.CSVRenderer{}
+	case "md":
+		renderer = &aggregator.MarkdownRenderer{}
 	default:
 		log.Fatalf("unknown format: %s", cfg.Format)
 	}

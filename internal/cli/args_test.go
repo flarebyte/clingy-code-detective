@@ -64,7 +64,7 @@ func TestParseArgs_MutuallyExclusiveFormats(t *testing.T) {
 	}
 
 	_, err := ParseArgsFrom(args)
-	if err == nil || err.Error() != "only one of --json or --csv can be used" {
+	if err == nil || err.Error() != "only one of --json or --csv or --md can be used" {
 		t.Errorf("expected mutually exclusive error, got: %v", err)
 	}
 }

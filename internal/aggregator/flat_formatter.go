@@ -5,6 +5,7 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
+	"strings"
 )
 
 // JSONRenderer implements Renderer for JSON output.
@@ -50,4 +51,34 @@ func (r *CSVRenderer) Render(deps []FlatDependency) ([]byte, error) {
 	}
 
 	return buf.Bytes(), nil
+}
+
+// MarkdownRenderer implements FlatRenderer for Markdown table output.
+type MarkdownRenderer struct{}
+
+// Render renders dependencies as a Markdown table.
+func (r *MarkdownRenderer) Render(deps []FlatDependency) ([]byte, error) {
+	var buf bytes.Buffer
+
+	// Write header
+	buf.WriteString("| Name | Version | Category | Path | Packaging |\n")
+	buf.WriteString("| ---- | ------- | -------- | ---- | --------- |\n")
+
+	// Write rows
+	for _, dep := range deps {
+		row := fmt.Sprintf("| %s | %s | %s | %s | %s |\n",
+			escapeMarkdown(dep.Name),
+			escapeMarkdown(dep.Version),
+			escapeMarkdown(dep.Category),
+			escapeMarkdown(dep.Path),
+			escapeMarkdown(dep.Packaging),
+		)
+		buf.WriteString(row)
+	}
+
+	return buf.Bytes(), nil
+}
+
+func escapeMarkdown(s string) string {
+	return strings.ReplaceAll(s, "|", "\\|")
 }

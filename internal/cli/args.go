@@ -42,13 +42,14 @@ func (i *parseExcludes) Set(value string) error {
 func ParseArgsFrom(args []string) (*Config, error) {
 	var includes parseIncludes
 	var excludes parseExcludes
-	var jsonOut, csvOut, aggregate bool
+	var jsonOut, csvOut, mdOut, aggregate bool
 
 	fs := flag.NewFlagSet("clingy", flag.ContinueOnError)
 	fs.Var(&includes, "include", "Comma-separated list of ecosystems to include (e.g., node,dart)")
 	fs.Var(&excludes, "exclude", "Comma-separated list of path segments to exclude (e.g., /node_modules/,'/dist/')")
 	fs.BoolVar(&jsonOut, "json", false, "Output in JSON format")
 	fs.BoolVar(&csvOut, "csv", false, "Output in CSV format")
+	fs.BoolVar(&mdOut, "md", false, "Output in markdown format")
 	fs.BoolVar(&aggregate, "aggregate", false, "Aggregate results across all directories")
 
 	if err := fs.Parse(args); err != nil {
@@ -62,12 +63,14 @@ func ParseArgsFrom(args []string) (*Config, error) {
 
 	var format string
 	switch {
-	case jsonOut && csvOut:
-		return nil, errors.New("only one of --json or --csv can be used")
+	case (jsonOut && csvOut) || (jsonOut && mdOut) || (csvOut && mdOut):
+		return nil, errors.New("only one of --json or --csv or --md can be used")
 	case jsonOut:
 		format = "json"
 	case csvOut:
 		format = "csv"
+	case mdOut:
+		format = "md"
 	}
 
 	return &Config{
