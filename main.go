@@ -6,6 +6,7 @@ import (
 	"runtime"
 	"sync"
 
+	"github.com/flarebyte/clingy-code-detective/internal/aggregator"
 	"github.com/flarebyte/clingy-code-detective/internal/cli"
 	"github.com/flarebyte/clingy-code-detective/internal/parser"
 	"github.com/flarebyte/clingy-code-detective/internal/scanner"
@@ -44,8 +45,10 @@ func main() {
 			parser.ProduceDependencyFile(filePathChan, resultChan)
 		}()
 	}
-	// for result := range resultChan {
-	// 	fmt.Println("Parsed", result)
-	// }
+	done := make(chan []aggregator.FlatDependency)
+	go aggregator.CollectDependencies(resultChan, done)
+
+	wg.Wait()
 	close(resultChan)
+	<-done
 }
