@@ -19,8 +19,5 @@ func CollectDependencies(resultChan <-chan parser.DependencyFile, done chan<- []
 			flatDependencies = append(flatDependencies, DenormaliseDependencyFile(depFile)...)
 		}
 	}
-
-	fmt.Fprintf(os.Stdout, "Info %s", flatDependencies)
-
 	done <- flatDependencies
 }

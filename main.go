@@ -20,13 +20,6 @@ func main() {
 		os.Exit(1)
 	}
 
-	// Debug print to verify parsed config; replace with actual scanning logic.
-	fmt.Printf("Paths: %v\n", cfg.Paths)
-	fmt.Printf("Format: %s\n", cfg.Format)
-	fmt.Printf("Aggregate: %v\n", cfg.Aggregate)
-	fmt.Printf("Includes: %v\n", cfg.Includes)
-	fmt.Printf("Excludes: %v\n", cfg.Excludes)
-
 	numWorkers := runtime.NumCPU()
 
 	filePathChan := make(chan string)
@@ -52,8 +45,16 @@ func main() {
 	wg.Wait()
 	close(resultChan)
 
-	// Select a renderer
-	renderer := &aggregator.CSVRenderer{}
+	var renderer aggregator.FlatRenderer
+
+	switch cfg.Format {
+	case "json":
+		renderer = &aggregator.JSONRenderer{}
+	case "csv":
+		renderer = &aggregator.CSVRenderer{}
+	default:
+		log.Fatalf("unknown format: %s", cfg.Format)
+	}
 
 	// Render output
 	flatDependencies := <-done
