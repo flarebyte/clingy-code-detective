@@ -2,6 +2,7 @@ package parser
 
 import (
 	"encoding/json"
+	"sort"
 )
 
 type nodeParser struct{}
@@ -17,13 +18,23 @@ func (p nodeParser) Parse(content []byte) ([]Dependency, error) {
 		return nil, err
 	}
 
+	collectDeps := func(m map[string]string, cat string) []Dependency {
+		var deps []Dependency
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		for _, name := range keys {
+			deps = append(deps, Dependency{Name: name, Version: m[name], Category: cat})
+		}
+		return deps
+	}
+
 	var deps []Dependency
-	for name, ver := range pkg.Dependencies {
-		deps = append(deps, Dependency{Name: name, Version: ver, Category: "prod"})
-	}
-	for name, ver := range pkg.DevDependencies {
-		deps = append(deps, Dependency{Name: name, Version: ver, Category: "dev"})
-	}
+	deps = append(deps, collectDeps(pkg.Dependencies, "prod")...)
+	deps = append(deps, collectDeps(pkg.DevDependencies, "dev")...)
 
 	return deps, nil
 }
