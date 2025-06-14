@@ -5,7 +5,6 @@ import (
 	"encoding/csv"
 	"encoding/json"
 	"fmt"
-	"strings"
 )
 
 // JSONRenderer implements Renderer for JSON output.
@@ -67,18 +66,14 @@ func (r *MarkdownRenderer) Render(deps []FlatDependency) ([]byte, error) {
 	// Write rows
 	for _, dep := range deps {
 		row := fmt.Sprintf("| %s | %s | %s | %s | %s |\n",
-			escapeMarkdown(dep.Name),
-			escapeMarkdown(dep.Version),
-			escapeMarkdown(dep.Category),
-			escapeMarkdown(dep.Path),
-			escapeMarkdown(dep.Packaging),
+			EscapeMarkdown(dep.Name),
+			EscapeMarkdown(dep.Version),
+			EscapeMarkdown(dep.Category),
+			EscapeMarkdown(dep.Path),
+			EscapeMarkdown(dep.Packaging),
 		)
 		buf.WriteString(row)
 	}
 
 	return buf.Bytes(), nil
-}
-
-func escapeMarkdown(s string) string {
-	return strings.ReplaceAll(s, "|", "\\|")
 }

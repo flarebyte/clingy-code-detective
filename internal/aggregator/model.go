@@ -22,3 +22,7 @@ type AggregatedDependency struct {
 type FlatRenderer interface {
 	Render(deps []FlatDependency) ([]byte, error)
 }
+
+type AggregateRenderer interface {
+	Render(deps []AggregatedDependency) ([]byte, error)
+}
