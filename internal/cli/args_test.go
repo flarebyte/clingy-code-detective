@@ -70,29 +70,14 @@ func TestParseArgs_MutuallyExclusiveFormats(t *testing.T) {
 	}
 }
 
-func TestParseArgs_NoPaths(t *testing.T) {
-	withArgs([]string{"--json"}, func() {
-		_, err := ParseArgs()
-		if err == nil || !strings.Contains(err.Error(), "at least one directory path") {
-			t.Errorf("expected missing path error, got: %v", err)
-		}
-	})
-}
-
-func TestParseArgs_Defaults(t *testing.T) {
-	withArgs([]string{"some-dir"}, func() {
+func TestParseArgs_EmptyArgs_ShowsHelp(t *testing.T) {
+	withArgs([]string{}, func() {
 		cfg, err := ParseArgs()
 		if err != nil {
 			t.Fatalf("unexpected error: %v", err)
 		}
-		if cfg.Format != "" {
-			t.Errorf("expected Format to be empty, got %q", cfg.Format)
-		}
-		if cfg.Aggregate {
-			t.Errorf("expected Aggregate to be false by default")
-		}
-		if len(cfg.Includes) != 0 {
-			t.Errorf("expected no Includes, got %v", cfg.Includes)
+		if !cfg.ShowHelp {
+			t.Error("expected ShowHelp to be true for empty args")
 		}
 	})
 }

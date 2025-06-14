@@ -1,7 +1,6 @@
 package cli
 
 import (
-	"errors"
 	"flag"
 	"fmt"
 	"os"
@@ -77,13 +76,14 @@ Options:
 
 	paths := fs.Args()
 	if len(paths) == 0 {
-		return nil, errors.New("at least one directory path must be specified")
+		fs.Usage()
+		return &Config{ShowHelp: true}, nil
 	}
 
 	var format string
 	switch {
 	case (jsonOut && csvOut) || (jsonOut && mdOut) || (csvOut && mdOut):
-		return nil, errors.New("only one of --json, --csv, --md may be used")
+		return nil, fmt.Errorf("only one of --json, --csv, --md may be used")
 	case jsonOut:
 		format = "json"
 	case csvOut:
@@ -101,7 +101,11 @@ Options:
 	}, nil
 }
 
-// ParseArgs uses os.Args.
+// ParseArgs uses os.Args and defaults to help on empty args.
 func ParseArgs() (*Config, error) {
-	return ParseArgsFrom(os.Args[1:])
+	args := os.Args[1:]
+	if len(args) == 0 {
+		args = []string{"--help"}
+	}
+	return ParseArgsFrom(args)
 }
