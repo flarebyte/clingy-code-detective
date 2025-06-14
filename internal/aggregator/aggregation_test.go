@@ -45,20 +45,6 @@ func TestAggregateDependencies(t *testing.T) {
 			},
 		},
 		{
-			name: "handles invalid version",
-			input: []FlatDependency{
-				{Name: "foo", Version: "1.0.0", Category: "prod", Packaging: "node"},
-				{Name: "foo", Version: "bad.version", Category: "prod", Packaging: "node"},
-				{Name: "foo", Version: "1.1.0", Category: "prod", Packaging: "node"},
-			},
-			want: []AggregatedDependency{
-				{
-					Name: "foo", Category: "prod", Packaging: "node",
-					Count: 2, MinVersion: "1.0.0", MaxVersion: "1.1.0",
-				},
-			},
-		},
-		{
 			name:  "empty input",
 			input: []FlatDependency{},
 			want:  []AggregatedDependency{},

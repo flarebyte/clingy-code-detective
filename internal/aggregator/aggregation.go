@@ -2,8 +2,6 @@ package aggregator
 
 import (
 	"sort"
-
-	"github.com/Masterminds/semver/v3"
 )
 
 // AggregateDependencies aggregates a slice of FlatDependency into AggregatedDependency.
@@ -40,12 +38,6 @@ func AggregateDependencies(deps []FlatDependency) []AggregatedDependency {
 				Category:  d.Category,
 				Packaging: d.Packaging,
 			}
-		}
-
-		// Try parsing version first to skip invalid ones early
-		if _, err := semver.NewVersion(d.Version); err != nil {
-			// Invalid version — skip it
-			continue
 		}
 
 		agg := state[key]
