@@ -33,10 +33,24 @@ model:
       - "[trivy](https://github.com/aquasecurity/trivy)"
     tags:
       - image-hero
-    cheatsheetFormat: go
+    cheatsheetFormat: bash
     cheatsheet:
-      - title: todo
-        example: "todo go code here"
+      - title: Show help
+        example: "clingy --help"
+      - title: Show version
+        example: "clingy --version"
+      - title: Scan a single directory with default output (JSON implied by context)
+        example: "clingy ./my-project"
+      - title: Include specific ecosystems (e.g., Node.js and Dart)
+        example: "clingy --include=node,dart ./my-project"
+      - title: Exclude specific path segments
+        example: "clingy --exclude=/node_modules/,/build/ ./my-project"
+      - title: Output results in CSV format
+        example: "clingy --csv ./my-project"
+      - title: Output results in Markdown format
+        example: "clingy --md ./my-project"
+      - title: Aggregate results across multiple paths
+        example: "clingy --aggregate ./proj-a ./proj-b"
   github:
     account: flarebyte
     name: clingy-code-detective
@@ -66,9 +80,7 @@ workflows:
         main:
           commands:
             - title: Format nicely the lib source code
-              run: go fmt ./lib/...
-            - title: Format nicely the test source code
-              run: go fmt ./test/...
+              run: go fmt ./...
             - title: Run test coverage
               run: go test -coverprofile=coverage.out ./...
             - title: Display test coverage Summary
@@ -85,7 +97,7 @@ workflows:
         main:
           commands:
             - title: Upgrade to latest dependencies
-              run: go get -u ./...  
+              run: go get -u ./...
   doc:
     title: Generate the documentation
     description: Generate the documentation automatically
@@ -129,21 +141,21 @@ workflows:
         motivation: Make the code more consistent and avoid bugs
         main:
           commands:
-          - name: check
-            title: Lint check sources
-            run: golangci-lint run ./...
-          - name: check fix
-            title: Preview of the proposed changes for a project
-            run: go vet ./...
+            - name: check
+              title: Lint check sources
+              run: golangci-lint run ./...
+            - name: check fix
+              title: Preview of the proposed changes for a project
+              run: go vet ./...
       fix:
         title: Fix static code analysis
         description: Fix problems in Dart code
         motivation: Facilitate routine maintenance of code
         main:
-         commands:
-          - name: fix
-            title: Fix source code
-            run: golangci-lint run --fix ./...
+          commands:
+            - name: fix
+              title: Fix source code
+              run: golangci-lint run --fix ./...
   md:
     title: Markdown documentation
     description: Manage markdown documentation

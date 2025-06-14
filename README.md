@@ -33,10 +33,59 @@ Highlights:
 
 A few examples of commands:
 
-todo:
+Show help:
 
-```go
-todo go code here
+```bash
+clingy --help
+
+```
+
+Show version:
+
+```bash
+clingy --version
+
+```
+
+Scan a single directory with default output (JSON implied by context):
+
+```bash
+clingy ./my-project
+
+```
+
+Include specific ecosystems (e.g., Node.js and Dart):
+
+```bash
+clingy --include=node,dart ./my-project
+
+```
+
+Exclude specific path segments:
+
+```bash
+clingy --exclude=/node_modules/,/build/ ./my-project
+
+```
+
+Output results in CSV format:
+
+```bash
+clingy --csv ./my-project
+
+```
+
+Output results in Markdown format:
+
+```bash
+clingy --md ./my-project
+
+```
+
+Aggregate results across multiple paths:
+
+```bash
+clingy --aggregate ./proj-a ./proj-b
 
 ```
 
