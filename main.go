@@ -20,6 +20,11 @@ func main() {
 		os.Exit(1)
 	}
 
+	if cfg.ShowHelp || cfg.ShowVer {
+		// Help/version already displayed by cli package
+		os.Exit(0)
+	}
+
 	numWorkers := runtime.NumCPU()
 
 	filePathChan := make(chan string)
