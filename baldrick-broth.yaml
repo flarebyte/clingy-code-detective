@@ -33,24 +33,24 @@ model:
       - "[trivy](https://github.com/aquasecurity/trivy)"
     tags:
       - image-hero
-  cheatsheetFormat: bash
-  cheatsheet:
-    - title: Show help
-      example: "clingy --help"
-    - title: Show version
-      example: "clingy --version"
-    - title: Scan a single directory with default output (JSON implied by context)
-      example: "clingy ./my-project"
-    - title: Include specific ecosystems (e.g., Node.js and Dart)
-      example: "clingy --include=node,dart ./my-project"
-    - title: Exclude specific path segments
-      example: "clingy --exclude=/node_modules/,/build/ ./my-project"
-    - title: Output results in CSV format
-      example: "clingy --csv ./my-project"
-    - title: Output results in Markdown format
-      example: "clingy --md ./my-project"
-    - title: Aggregate results across multiple paths
-      example: "clingy --aggregate ./proj-a ./proj-b"
+    cheatsheetFormat: bash
+    cheatsheet:
+      - title: Show help
+        example: "clingy --help"
+      - title: Show version
+        example: "clingy --version"
+      - title: Scan a single directory with default output (JSON implied by context)
+        example: "clingy ./my-project"
+      - title: Include specific ecosystems (e.g., Node.js and Dart)
+        example: "clingy --include=node,dart ./my-project"
+      - title: Exclude specific path segments
+        example: "clingy --exclude=/node_modules/,/build/ ./my-project"
+      - title: Output results in CSV format
+        example: "clingy --csv ./my-project"
+      - title: Output results in Markdown format
+        example: "clingy --md ./my-project"
+      - title: Aggregate results across multiple paths
+        example: "clingy --aggregate ./proj-a ./proj-b"
   github:
     account: flarebyte
     name: clingy-code-detective
