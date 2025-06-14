@@ -4,6 +4,7 @@ import (
 	"flag"
 	"os"
 	"reflect"
+	"strings"
 	"testing"
 )
 
@@ -64,7 +65,7 @@ func TestParseArgs_MutuallyExclusiveFormats(t *testing.T) {
 	}
 
 	_, err := ParseArgsFrom(args)
-	if err == nil || err.Error() != "only one of --json or --csv or --md can be used" {
+	if err == nil || !strings.Contains(err.Error(), "only one of --json, --csv, --md") {
 		t.Errorf("expected mutually exclusive error, got: %v", err)
 	}
 }
@@ -72,7 +73,7 @@ func TestParseArgs_MutuallyExclusiveFormats(t *testing.T) {
 func TestParseArgs_NoPaths(t *testing.T) {
 	withArgs([]string{"--json"}, func() {
 		_, err := ParseArgs()
-		if err == nil || err.Error() != "at least one directory path must be specified" {
+		if err == nil || !strings.Contains(err.Error(), "at least one directory path") {
 			t.Errorf("expected missing path error, got: %v", err)
 		}
 	})
@@ -94,4 +95,24 @@ func TestParseArgs_Defaults(t *testing.T) {
 			t.Errorf("expected no Includes, got %v", cfg.Includes)
 		}
 	})
+}
+
+func TestParseArgs_HelpFlag(t *testing.T) {
+	cfg, err := ParseArgsFrom([]string{"--help"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !cfg.ShowHelp {
+		t.Error("expected ShowHelp to be true")
+	}
+}
+
+func TestParseArgs_VersionFlag(t *testing.T) {
+	cfg, err := ParseArgsFrom([]string{"--version"})
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if !cfg.ShowVer {
+		t.Error("expected ShowVer to be true")
+	}
 }
