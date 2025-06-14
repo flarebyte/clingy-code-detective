@@ -37,7 +37,9 @@ func ParseArgsFrom(args []string) (*Config, error) {
 
 	fs := flag.NewFlagSet("clingy", flag.ContinueOnError)
 	fs.Usage = func() {
-		fmt.Fprintf(fs.Output(), `Usage: clingy [options] <paths>
+		fmt.Fprintf(fs.Output(), `clingy - expose the code that's a little too attached
+Copyright (c) 2025 Flarebyte.com - MIT License
+Usage: clingy [options] <paths>
 
 Options:
   --include    Comma-separated ecosystems to include (e.g. node,dart)
