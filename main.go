@@ -45,26 +45,44 @@ func main() {
 	wg.Wait()
 	close(resultChan)
 
-	var renderer aggregator.FlatRenderer
+	var flatRenderer aggregator.FlatRenderer
+	var aggregateRenderer aggregator.AggregateRenderer
 
 	switch cfg.Format {
 	case "json":
-		renderer = &aggregator.JSONRenderer{}
+		flatRenderer = &aggregator.JSONRenderer{}
+		aggregateRenderer = &aggregator.JSONAggregateRenderer{}
 	case "csv":
-		renderer = &aggregator.CSVRenderer{}
+		flatRenderer = &aggregator.CSVRenderer{}
+		aggregateRenderer = &aggregator.CSVAggregateRenderer{}
 	case "md":
-		renderer = &aggregator.MarkdownRenderer{}
+		flatRenderer = &aggregator.MarkdownRenderer{}
+		aggregateRenderer = &aggregator.MarkdownAggregateRenderer{}
 	default:
 		log.Fatalf("unknown format: %s", cfg.Format)
 	}
 
 	// Render output
 	flatDependencies := <-done
-	output, err := renderer.Render(flatDependencies)
-	if err != nil {
-		log.Fatalf("failed to render dependencies: %v", err)
-	}
 
-	fmt.Println(string(output))
+	if cfg.Aggregate {
+		aggegateDependencies := aggregator.AggregateDependencies(flatDependencies)
+
+		output, err := aggregateRenderer.Render(aggegateDependencies)
+		if err != nil {
+			log.Fatalf("failed to render dependencies after aggregation: %v", err)
+		}
+
+		fmt.Println(string(output))
+
+	} else {
+		output, err := flatRenderer.Render(flatDependencies)
+		if err != nil {
+			log.Fatalf("failed to render dependencies: %v", err)
+		}
+
+		fmt.Println(string(output))
+
+	}
 
 }
