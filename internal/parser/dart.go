@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"sort"
+
 	"gopkg.in/yaml.v3"
 )
 
@@ -12,7 +14,6 @@ type pubspecYAML struct {
 }
 
 func (p dartParser) Parse(content []byte) ([]Dependency, error) {
-
 	var spec pubspecYAML
 	if err := yaml.Unmarshal(content, &spec); err != nil {
 		return nil, err
@@ -20,7 +21,14 @@ func (p dartParser) Parse(content []byte) ([]Dependency, error) {
 
 	parseMap := func(m map[string]interface{}, cat string) []Dependency {
 		var deps []Dependency
-		for name, val := range m {
+		keys := make([]string, 0, len(m))
+		for k := range m {
+			keys = append(keys, k)
+		}
+		sort.Strings(keys)
+
+		for _, name := range keys {
+			val := m[name]
 			switch v := val.(type) {
 			case string:
 				deps = append(deps, Dependency{Name: name, Version: v, Category: cat})

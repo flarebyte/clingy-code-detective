@@ -38,6 +38,7 @@ func ParseArgsFrom(args []string) (*Config, error) {
 	fs := flag.NewFlagSet("clingy", flag.ContinueOnError)
 	fs.Usage = func() {
 		fmt.Fprintf(fs.Output(), `clingy - expose the code that's a little too attached
+Also known as clingy-code-detective, a command-line tool to scan project directories for dependencies across multiple ecosystems, aggregating and reporting them.	
 Copyright (c) 2025 Flarebyte.com - MIT License
 Usage: clingy [options] <paths>
 
