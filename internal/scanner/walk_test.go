@@ -125,13 +125,12 @@ func TestWalkDirectories(t *testing.T) {
 			filePathChan := make(chan string)
 			var foundPaths []string
 
-			go WalkDirectories(tmpDir, tt.includes, tt.excludes, filePathChan)
+			go WalkDirectories([]string{tmpDir}, tt.includes, tt.excludes, filePathChan)
 
 			for path := range filePathChan {
 				foundPaths = append(foundPaths, path)
 			}
 
-			// Sort to make order irrelevant
 			slices.Sort(foundPaths)
 			slices.Sort(tt.expectedPaths)
 
@@ -146,6 +145,7 @@ func TestWalkDirectories(t *testing.T) {
 				}
 			}
 		})
+
 	}
 }
 

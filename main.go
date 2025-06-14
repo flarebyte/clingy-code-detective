@@ -31,10 +31,7 @@ func main() {
 	resultChan := make(chan parser.DependencyFile)
 
 	var wg sync.WaitGroup
-
-	var root = cfg.Paths[0]
-
-	go scanner.WalkDirectories(root, cfg.Includes, cfg.Excludes, filePathChan)
+	go scanner.WalkDirectories(cfg.Paths, cfg.Includes, cfg.Excludes, filePathChan)
 
 	//Parse each file with a pool of workers
 	for range numWorkers {
