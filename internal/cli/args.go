@@ -10,6 +10,26 @@ import (
 // Version should be set at build time using -ldflags "-X 'cli.Version=1.2.3'"
 var Version = "version-dev"
 var Date = "date-dev"
+var niceDate = strings.ReplaceAll(Date, "-", " ")
+
+const helpIntro = `clingy - expose the code that's a little too attached
+Also known as clingy-code-detective, a command-line tool to scan project directories for dependencies across multiple ecosystems, aggregating and reporting them.	
+Copyright (c) 2025 Flarebyte.com - MIT License
+`
+
+const helpUsage = `
+Usage: clingy [options] <paths>
+
+Options:
+  --include    Comma-separated ecosystems to include (e.g. node,dart)
+  --exclude    Comma-separated path segments to exclude (e.g. /node_modules/)
+  --json       Output in JSON format
+  --csv        Output in CSV format
+  --md         Output in Markdown format
+  --aggregate  Aggregate results across all directories
+  --version    Show version information
+  --help       Show this help message
+`
 
 // Config holds the parsed CLI arguments.
 type Config struct {
@@ -38,21 +58,7 @@ func ParseArgsFrom(args []string) (*Config, error) {
 
 	fs := flag.NewFlagSet("clingy", flag.ContinueOnError)
 	fs.Usage = func() {
-		fmt.Fprintf(fs.Output(), `clingy - expose the code that's a little too attached
-Also known as clingy-code-detective, a command-line tool to scan project directories for dependencies across multiple ecosystems, aggregating and reporting them.	
-Copyright (c) 2025 Flarebyte.com - MIT License
-Usage: clingy [options] <paths>
-
-Options:
-  --include    Comma-separated ecosystems to include (e.g. node,dart)
-  --exclude    Comma-separated path segments to exclude (e.g. /node_modules/)
-  --json       Output in JSON format
-  --csv        Output in CSV format
-  --md         Output in Markdown format
-  --aggregate  Aggregate results across all directories
-  --version    Show version information
-  --help       Show this help message
-`)
+		fmt.Fprintf(fs.Output(), "%sVersion: %s, Date: %s \n%s", helpIntro, Version, niceDate, helpUsage)
 	}
 
 	fs.Var(&includes, "include", "Ecosystems to include")
