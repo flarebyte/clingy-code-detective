@@ -217,6 +217,9 @@ workflows:
             - name: outdated
               title: Check whether some libraries are outdated
               run: go list -u -m all
+            - name: build-platforms
+              title: Build for the different platforms
+              run: npx zx build-go.mjs
             - name: rm-report
               title: Remove previous report
               run: rm -f temp/pull_request_relevant.md

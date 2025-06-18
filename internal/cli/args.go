@@ -8,7 +8,8 @@ import (
 )
 
 // Version should be set at build time using -ldflags "-X 'cli.Version=1.2.3'"
-var Version = "dev"
+var Version = "version-dev"
+var Date = "date-dev"
 
 // Config holds the parsed CLI arguments.
 type Config struct {

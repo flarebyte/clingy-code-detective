@@ -32,3 +32,5 @@ report/
 temp/
 .message
 .todo.yaml
+
+build/
