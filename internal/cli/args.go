@@ -8,8 +8,10 @@ import (
 )
 
 // Version should be set at build time using -ldflags "-X 'cli.Version=1.2.3'"
-var Version = "version-dev"
-var Date = "date-dev"
+var (
+	Version string
+	Date    string
+)
 var niceDate = strings.ReplaceAll(Date, "-", " ")
 
 const helpIntro = `clingy - expose the code that's a little too attached
