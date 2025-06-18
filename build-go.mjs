@@ -20,7 +20,7 @@ const brothContent = YAML.parse(brothFile);
 const version = brothContent.model.project.version;
 const currentDate = getBritishDate().replaceAll(' ', '-');
 
-const ldflags = `-X cli.Version=${version} -X cli.Date=${currentDate}`
+const ldflags = `-X ${projectName}/internal/cli.Version=${version} -X ${projectName}/internal/cli.Date=${currentDate}`
 
 echo("Linux (amd64)");
 $`GOOS=linux GOARCH=amd64 go build -o build/${name}-linux-amd64 -ldflags ${ldflags}`;
