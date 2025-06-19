@@ -25,8 +25,13 @@ const currentDate = getBritishDate().replaceAll(" ", "-");
 const ldflags = `-X ${projectName}/internal/cli.Version=${version} -X ${projectName}/internal/cli.Date=${currentDate}`;
 const platforms = [
   { label: "Linux (amd64)", os: "linux", arch: "amd64" },
+  { label: "Linux (arm64)", os: "linux", arch: "arm64" },
+
   { label: "macOS (Intel)", os: "darwin", arch: "amd64" },
   { label: "macOS (Apple Silicon)", os: "darwin", arch: "arm64" },
+
+  { label: "Windows (amd64)", os: "windows", arch: "amd64" },
+  { label: "Windows (arm64)", os: "windows", arch: "arm64" },
 ];
 
 for (const p of platforms) {
