@@ -12,8 +12,10 @@ function getBritishDate() {
   return britishDate;
 }
 
-const name = "clingy";
-const projectName = "github.com/flarebyte/clingy-code-detective";
+const currentDirectory = process.cwd();
+const folderName = path.basename(currentDirectory);
+
+const projectName = `github.com/flarebyte/${folderName}`;
 
 const brothFile = fs.readFileSync("baldrick-broth.yaml", "utf8");
 const brothContent = YAML.parse(brothFile);
@@ -29,5 +31,5 @@ const platforms = [
 
 for (const p of platforms) {
   echo(p.label);
-  $`GOOS=${p.os} GOARCH=${p.arch} go build -o build/${name}-${p.os}-${p.arch} -ldflags ${ldflags}`;
+  $`GOOS=${p.os} GOARCH=${p.arch} go build -o build/${folderName}-${p.os}-${p.arch} -ldflags ${ldflags}`;
 }
