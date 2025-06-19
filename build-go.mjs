@@ -12,21 +12,22 @@ function getBritishDate() {
   return britishDate;
 }
 
-const name = "clingy"
-const projectName = "github.com/flarebyte/clingy-code-detective"
+const name = "clingy";
+const projectName = "github.com/flarebyte/clingy-code-detective";
 
 const brothFile = fs.readFileSync("baldrick-broth.yaml", "utf8");
 const brothContent = YAML.parse(brothFile);
 const version = brothContent.model.project.version;
-const currentDate = getBritishDate().replaceAll(' ', '-');
+const currentDate = getBritishDate().replaceAll(" ", "-");
 
-const ldflags = `-X ${projectName}/internal/cli.Version=${version} -X ${projectName}/internal/cli.Date=${currentDate}`
+const ldflags = `-X ${projectName}/internal/cli.Version=${version} -X ${projectName}/internal/cli.Date=${currentDate}`;
+const platforms = [
+  { label: "Linux (amd64)", os: "linux", arch: "amd64" },
+  { label: "macOS (Intel)", os: "darwin", arch: "amd64" },
+  { label: "macOS (Apple Silicon)", os: "darwin", arch: "arm64" },
+];
 
-echo("Linux (amd64)");
-$`GOOS=linux GOARCH=amd64 go build -o build/${name}-linux-amd64 -ldflags ${ldflags}`;
-
-echo("macOS (Intel)");
-$`GOOS=darwin GOARCH=amd64 go build -o build/${name}-darwin-amd64 -ldflags ${ldflags}`;
-
-echo("macOS (Apple Silicon)");
-$`GOOS=darwin GOARCH=arm64 go build -o build/${name}-darwin-arm64 -ldflags ${ldflags}`;
+for (const p of platforms) {
+  echo(p.label);
+  $`GOOS=${p.os} GOARCH=${p.arch} go build -o build/${name}-${p.os}-${p.arch} -ldflags ${ldflags}`;
+}
