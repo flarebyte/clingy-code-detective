@@ -60,7 +60,7 @@ func ParseArgsFrom(args []string) (*Config, error) {
 
 	fs := flag.NewFlagSet("clingy", flag.ContinueOnError)
 	fs.Usage = func() {
-		fmt.Fprintf(fs.Output(), "%sVersion: %s, Date: %s \n%s", helpIntro, Version, niceDate, helpUsage)
+		fmt.Printf("%sVersion: %s, Date: %s \n%s", helpIntro, Version, niceDate, helpUsage)
 	}
 
 	fs.Var(&includes, "include", "Ecosystems to include")
