@@ -1,50 +1,46 @@
 # Contributing
 
-Welcome ! and many thanks for taking the time to contribute !
+Welcome! And many thanks for taking the time to contribute!
 
-First, you should have a look at the [Technical design
-documentation](TECHNICAL_DESIGN.md) to get an understanding of the design
-behind this project.
+Before getting started, please read the [Technical Design
+documentation](TECHNICAL_DESIGN.md) to understand the architectural and
+coding guidelines used in this project.
 
-From there, there are a few options depending of which kind of contributions
-you have in mind: bug fix, documentation improvement, translation, testing,
-...
+There are many ways you can contribute: fixing bugs, writing documentation,
+improving tests, suggesting features, or reviewing code.
 
-Please note we have a [code of conduct](CODE_OF_CONDUCT.md), please follow it
+Please note we have a [Code of Conduct](CODE_OF_CONDUCT.md); please follow it
 in all your interactions with the project.
 
 ## Build the project locally
+
+Make sure you have Go installed (preferably the latest stable version). Clone
+the repository and build from the root:
+
+```bash
+git clone https://github.com/flarebyte/clingy-code-detective.git
+cd clingy-code-detective
+go build ./...
+```
 
 The following commands should get you started:
 
 Setup an alias:
 
-```
+```bash
 alias broth='npx baldrick-broth'
 ```
 
 or if you prefer to always use the latest version:
 
-```
+```bash
 alias broth='npx baldrick-broth@latest'
 ```
 
-Install the `npm` dependencies:
+Run the unit tests:
 
 ```bash
-yarn install
-```
-
-Run the `zest` unit tests:
-
-```bash
-broth test spec
-```
-
-Run the `pest` CLI integration tests:
-
-```bash
-broth test pest
+broth test unit
 ```
 
 A list of [most used commands](MAINTENANCE.md) is available:
@@ -58,12 +54,6 @@ When you are ready for a pull request:
 
 ```bash
 broth release ready
-```
-
-You will probably want to update the documentation:
-
-```bash
-broth doc ts
 ```
 
 You can also simulate [Github actions](https://docs.github.com/en/actions)

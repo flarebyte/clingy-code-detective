@@ -217,6 +217,9 @@ workflows:
             - name: outdated
               title: Check whether some libraries are outdated
               run: go list -u -m all
+            - name: build-platforms
+              title: Build for the different platforms
+              run: npx zx build-go.mjs
             - name: rm-report
               title: Remove previous report
               run: rm -f temp/pull_request_relevant.md
@@ -268,7 +271,7 @@ workflows:
               title: Create the pull request
       publish:
         title: Publish the current library
-        description: Publih the current library to npm
+        description: Publish the current library to github
         motivation: Detect quality flaws before pushing the code
         main:
           commands:
@@ -287,12 +290,12 @@ workflows:
             - name: remove-build
               title: Remove previous build
               run: rm -rf build
-            - name: publish
-              title: Publish to Dart
-              run: dart
+            - name: build-platforms
+              title: Build for the different platforms
+              run: npx zx build-go.mjs
             - name: release
               title: Release the library to Github
-              run: gh release create v{{build.model.project.version}} --generate-notes
+              run: gh release create v{{build.model.project.version}} ./build/* --generate-notes
             - name: refresh
               title: Get the latest tag from Github
               run: git fetch --all
