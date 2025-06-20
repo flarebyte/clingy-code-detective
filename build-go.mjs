@@ -36,5 +36,8 @@ const platforms = [
 
 for (const p of platforms) {
   echo(p.label);
-  $`GOOS=${p.os} GOARCH=${p.arch} go build -o build/${folderName}-${p.os}-${p.arch} -ldflags ${ldflags}`;
+  await $`GOOS=${p.os} GOARCH=${p.arch} go build -o build/${folderName}-${p.os}-${p.arch} -ldflags ${ldflags}`;
 }
+
+const checksum = await $`shasum -a 256 build/${folderName}-*`;
+await fs.writeFile("build/checksums.txt", checksum.stdout, "utf8");

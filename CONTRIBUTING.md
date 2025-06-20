@@ -29,7 +29,7 @@ Setup an alias:
 
 ```bash
 alias broth='npx baldrick-broth'
-````
+```
 
 or if you prefer to always use the latest version:
 
