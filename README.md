@@ -107,14 +107,18 @@ clingy --aggregate ./proj-a ./proj-b
 
 ## Installation
 
-To use as a module in your Go project:
+### Homebrew
 
-```go
-import "github.com/flarebyte/clingy-code-detective"
+Install with [brew](https://brew.sh/):
+
+```
+brew install flarebyte/tap/clingy-code-detective
 ```
 
-Install the module:
+### Linux
 
-```bash
-go get github.com/flarebyte/clingy-code-detective@latest
+Install on Linux AMD64 / ARM64:
+
+```
+curl -fsSL https://github.com/myorg/flarebyte/tap/clingy-code-detective/raw/main/scripts/install.sh | bash
 ```
